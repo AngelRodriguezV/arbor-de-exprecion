@@ -6,6 +6,7 @@ from settings import *
 from ui.circle import Circle
 from ui.inputText import inputText
 from ui.button import Button
+from graficacion import Generador, ArbolGrafico
 
 class Motor2D:
 
@@ -17,13 +18,18 @@ class Motor2D:
         self.clock = pg.time.Clock()
         self.running = True
 
-        self.x = 120
-        self.c1 = Circle(self.screen, 'A')
         self.input = inputText(self.screen, (100,20),  pg.font.Font(None, 60))
         self.input.setText("a+b-c")
 
         self.button = Button((20, 20), callback=self)
         self.all_sprites = pg.sprite.Group(self.button)
+
+        self.g = Generador()
+        self.g.generarDatos(
+            ["a","-","b","*","c","/","d"],
+            ["-","a","/","*","b","c","d"]
+        )
+        self.arbol_g = ArbolGrafico(self.screen, WITH, HEIGHT, self.g)
 
     def event(self):
         event_list =  pg.event.get()
@@ -35,18 +41,19 @@ class Motor2D:
 
         
     def update(self):
-        self.c1.update((self.x,120), color=RED)
-        self.x += 1
         self.input.update()
         self.all_sprites.update()
+
+        self.arbol_g.update()
 
     def render(self):
         self.screen.fill(BG_COLOR)
 
         self.input.render()
         self.all_sprites.draw(self.screen)
+
+        self.arbol_g.render()
         
-        self.c1.render() 
         pg.display.flip()
 
     def run(self):
