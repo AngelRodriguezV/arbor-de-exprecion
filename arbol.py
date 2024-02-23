@@ -19,14 +19,15 @@ class Arbol:
         self.raiz = None
         # Recorre la cadena
         # Mientras el caracter diferente de nulo
-        for caracter in cadena:
+        for i, caracter in enumerate(cadena):
+            self.index = i
             # Leer caracter
             # Si es parentesis pasar al siguiente caracter
             if caracter == "(":
-                self.numero_parentesis += 1
+                self.parentesis += 1
                 continue
             if caracter == ")":
-                self.numero_parentesis -= 1
+                self.parentesis -= 1
                 continue
             # Crear un nodo nuevo que contenga ese caracter
             nodo = Nodo(data=caracter)
@@ -40,7 +41,7 @@ class Arbol:
     def __insertar_operando(self, new:Nodo, root:Nodo=None) -> Nodo:
         # Si la raiz es nula
         if root == None:
-            # Nuewvo nodo se combierte en raiz
+            # Nuevo nodo se combierte en raiz
             return new
         else:
             aux = root
@@ -69,12 +70,12 @@ class Arbol:
                 # Insertar nuevo en la última hoja derecha
                 aux = root
                 while aux.rigth:
-                    if aux.rigth.rigth == None:
+                    if aux.rigth.rigth != None:
                         aux = aux.rigth
                     break
                 rigth = aux.rigth
                 aux.rigth = new
-                # Colocar operando como hijo izquierdo.
+                # Y Colocar operando como hijo izquierdo.
                 new.left = rigth
                 return root
         
@@ -83,9 +84,9 @@ class Arbol:
             # Si el siguiente carácter es paréntesis derecho
             if self.cadena[self.index + 1] == '(':
                 # Si solo hay un operador en el árbol
-                if self.isOperador(root.left) or self.isOperador(root.rigth): 
+                if not self.isOperador(root.left) and not self.isOperador(root.rigth): 
                     # Nuevo se convierte en raíz
-                    new.rigth = root
+                    new.left = root
                     return new
                 # Si no 
                 else:
@@ -95,6 +96,10 @@ class Arbol:
                         aux = aux.rigth
                     # y el nodo se convierte en hijo izquierdo.
                     aux.left = new
+            else:
+                # Nuevo se convierte en raíz
+                new.left = root
+                return new
 
         # Si no se cumple ninguna de las condiciones anteriores
         else:
@@ -106,14 +111,22 @@ class Arbol:
             # Si no, la prioridad del nodo raíz es mayor al de nuevo
             else: 
                 # Insertar nuevo como hijo derecho
-                aux = root.rigth
-                root.rigth = new
+                #aux = root.rigth
+                #root.rigth = new
+                aux = root
+                while aux.rigth:
+                    if aux.rigth.rigth != None:
+                        aux = aux.rigth
+                    break
+                rigth = aux.rigth
+                aux.rigth = new
                 # Colocar el nodo reemplazado como hijo izquierdo
-                root.left = aux
+                #root.left = aux
+                new.left = rigth
                 return root
 
     def __prioridad(self, operador1, operador2):
-        return operadores[operador1] <= operadores[operador2]
+        return operadores[operador1] >= operadores[operador2]
 
     def inorden(self):
         return inorden(self.raiz)
