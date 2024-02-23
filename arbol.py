@@ -1,4 +1,4 @@
-from nodo import Nodo
+from nodo import Nodo, inorden, preorden, postorden
 
 operadores = {'*': 2, '/': 2, '-': 1, '+': 1, '=': 0}
 
@@ -16,6 +16,7 @@ class Arbol:
     
     def crearArbol(self, cadena):
         self.cadena = cadena
+        self.raiz = None
         # Recorre la cadena
         # Mientras el caracter diferente de nulo
         for caracter in cadena:
@@ -111,6 +112,14 @@ class Arbol:
                 root.left = aux
                 return root
 
-
     def __prioridad(self, operador1, operador2):
         return operadores[operador1] <= operadores[operador2]
+
+    def inorden(self):
+        return inorden(self.raiz)
+    
+    def preorden(self):
+        return preorden(self.raiz)
+    
+    def postorden(self):
+        return postorden(self.raiz)

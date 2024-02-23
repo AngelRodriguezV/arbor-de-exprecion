@@ -1,5 +1,5 @@
 import pygame as pg
-import pygame.gfxdraw as pgfw
+import pygame_gui as gui
 import sys
 
 from settings import *
@@ -7,150 +7,81 @@ from ui.circle import Circle
 from ui.inputText import inputText
 from ui.button import Button
 from graficacion import Generador, ArbolGrafico
+from nodo import Nodo
+from arbol import Arbol
 
 class Motor2D:
 
     def __init__(self) -> None:
         pg.init()
-        self.screen = pg.display.set_mode(SIZE)
-        pg.display.set_caption("Arbol")
+        pg.display.set_caption("Arbol de Exprecion")
+        self.window_surface = pg.display.set_mode(SIZE, pg.RESIZABLE)
+
+        self.screen = pg.Surface(SIZE)
+        self.manager = gui.UIManager(SIZE)
 
         self.clock = pg.time.Clock()
         self.running = True
 
-        self.input = inputText(self.screen, (100,20),  pg.font.Font(None, 60))
-        self.input.setText("a+b-c")
+        # ==================== Componentes UI ========================
+        self.btn_ejecutar = gui.elements.UIButton(relative_rect=pg.Rect((10, 10), (150, 50)),
+            text='Crear Arbol',
+            manager=self.manager)
+        self.txt_label = gui.elements.UILabel(relative_rect=pg.Rect((200, 10), (200, 50)),
+            text='Ingrese una expresion',
+            manager=self.manager)
+        self.input_expresion = gui.elements.UITextEntryLine(relative_rect=pg.Rect((400, 10), (1000, 50)),
+            manager=self.manager)
 
-        self.button = Button((20, 20), callback=self)
-        self.all_sprites = pg.sprite.Group(self.button)
+        # ============================================================
 
-        self.g = Generador()
-        self.g.generarDatos(
-            ["G","D","K","H","L","B","A","E","I","C","F","J","M"],
-            ["A","B","D","G","H","K","L","C","E","I","F","J","M"]
-        )
-        self.arbol_g = ArbolGrafico(self.screen, WITH, HEIGHT, self.g)
+        self.arbol_g = None
 
     def event(self):
         event_list =  pg.event.get()
         for event in event_list:
             if event.type == pg.QUIT:
                 self.running = False
-            self.button.event(event)
-        self.input.event(event_list)
+            
+            if event.type == gui.UI_BUTTON_PRESSED:
+                if event.ui_element == self.btn_ejecutar:
 
+                    if self.input_expresion.get_text() != '':
+                        print('La cadena no esta vacia: ' + self.input_expresion.get_text())
+                        arbol = Arbol()
+                        arbol.crearArbol(self.input_expresion.get_text())
+                        print('Inorden: ')
+                        print(arbol.inorden())
+                        print('Preorden: ')
+                        print(arbol.preorden())
+                        generar_coord = Generador()
+                        generar_coord.generarDatos(arbol.inorden(), arbol.preorden())
+                        print('Indices: ')
+                        print(generar_coord.getIndices())
+                        print('Puntos: ')
+                        print(generar_coord.getPuntos())
+                        self.arbol_g = ArbolGrafico(self.screen, WITH, HEIGHT, generar_coord)
+
+            
+            self.manager.process_events(event)
         
     def update(self):
-        self.input.update()
-        self.all_sprites.update()
+        self.manager.update(self.clock.tick(60)/1000.0)
 
-        self.arbol_g.update()
+        if not (self.arbol_g == None):
+            self.arbol_g.update()
 
     def render(self):
         self.screen.fill(BG_COLOR)
-
-        self.input.render()
-        self.all_sprites.draw(self.screen)
-
-        self.arbol_g.render()
         
+        if not (self.arbol_g == None):
+            self.arbol_g.render()
+
+        self.window_surface.blit(self.screen, (500,100))
+        self.manager.draw_ui(self.window_surface)
         pg.display.flip()
 
-    def on_button_click(self):
-        ecuacion = self.input.getText()  # Obtener la ecuación del campo de entrada
-        postfija_ecuacion = postfija(ecuacion)  # Convertir a postfija
-        raiz = arbol(postfija_ecuacion)  # Construir el árbol
-        print("In orden =", inorder(raiz))
-        print("Pre orden =", preorder(raiz))
-        print("Post orden =", postorder(raiz))
-        # Ahora, aquí puedes construir o actualizar el árbol gráfico con la nueva expresión
-
-    # Nuevo método para manejar el evento de clic del botón
-    def on_button_event(self, event):
-        if event == "click":
-            self.on_button_click()
-
-
     
-def postfija(infija):
-    pilaOperadores = []
-    operadores = "(+-*/)"
-    posfija = ""
-    i = 0
-    while i < len(infija):
-        t = infija[i]
-        if t == '(':
-            pilaOperadores.append(t)
-        else:
-            if t == ')':
-                while pilaOperadores:
-                    o = pilaOperadores.pop()
-                    if o != '(':
-                        posfija += o
-            else:
-                if t in ['+', '-']:
-                    if any(op in ['*', '/', '-', '+'] for op in pilaOperadores):
-                        while pilaOperadores:
-                            posfija += pilaOperadores.pop()
-                    pilaOperadores.append(t)
-                else:
-                    if t in ['*', '/']:
-                        while pilaOperadores and (pilaOperadores[-1] in ['*', '/']):
-                            posfija += pilaOperadores.pop()
-                        pilaOperadores.append(t)
-                    else:
-                        posfija += t
-        i += 1
-    while pilaOperadores:
-        posfija += pilaOperadores.pop()
-    return posfija
-
-def arbol(posfija):
-    pilaNodos = []
-    for c in posfija:
-        if not esOperador(c):
-            nodo = Nodo(c)
-            pilaNodos.append(nodo)
-        else:
-            nodo = Nodo(c)
-            nodoDer = pilaNodos.pop()
-            nodoIzq = pilaNodos.pop()
-            nodo.der = nodoDer
-            nodo.izq = nodoIzq
-            pilaNodos.append(nodo)
-    return pilaNodos.pop()
-
-def esOperador(c):
-    return c in ('+', '-', '*', '/')
-
-# Recorridos
-inO = ""
-postO = ""
-preO = ""
-
-def inorder(nodo):
-    global inO
-    if nodo:
-        inorder(nodo.izq)
-        inO += nodo.valor
-        inorder(nodo.der)
-    return inO
-
-def preorder(nodo):
-    global preO
-    if nodo:
-        preO += nodo.valor
-        preorder(nodo.izq)
-        preorder(nodo.der)
-    return preO
-
-def postorder(nodo):
-    global postO
-    if nodo:
-        postorder(nodo.izq)
-        postorder(nodo.der)
-        postO += nodo.valor
-    return postO
     def run(self):
         while self.running:
             self.event()

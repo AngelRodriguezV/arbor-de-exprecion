@@ -1,24 +1,21 @@
-import pygame.gfxdraw as pgfw
+import pygame as pg
 from pygame import Surface
 
 from settings import *
 
-class Circle:
+class Circle(pg.sprite.Sprite):
 
-    def __init__(self, screen:Surface, text:str, poss=(0,0)) -> None:
-        self.screen = screen
-        self.x = poss[0]
-        self.y = poss[1]
-        self.color = None
-        self.text = FONT_1.render(text, True, BLACK)
+    def __init__(self,  x, y, radius, color, text):
+        super().__init__()
 
-    def update(self, color=WHITE) -> None:
-        self.color = color
+        self.image = pg.Surface((2 * radius, 2 * radius), pg.SRCALPHA)
 
-    def render(self) -> None:
-        pgfw.filled_circle(self.screen, self.x, self.y + 3, 32, GRAY)
-        pgfw.aacircle(self.screen, self.x, self.y + 3, 32, GRAY)
-        pgfw.filled_circle(self.screen, self.x, self.y, 30, self.color)
-        pgfw.aacircle(self.screen, self.x, self.y, 30, self.color)
-        self.screen.blit(self.text, (self.x - 10, self.y - 18))
+        pg.draw.circle(self.image, color, (radius, radius), radius)
+
+        font = pg.font.Font(None, 24)
+        text_surface = font.render(text, True, pg.Color("white"))
+        text_rect = text_surface.get_rect(center=(radius, radius))
+
+        self.image.blit(text_surface, text_rect)
+        self.rect = self.image.get_rect(center=(x, y))
         

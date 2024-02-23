@@ -69,17 +69,17 @@ class ArbolGrafico:
             a = i[2]
             self.puntos.append((x,y,a))
 
-        self.circles = []
-        self.crear()
-
-    def crear(self):
-        for p in self.puntos:
-            circle = Circle(self.screen, p[2], (p[0], p[1]))
-            self.circles.append(circle)
-
+        self.all_sprites = pg.sprite.Group()
+        
     def update(self):
-        for c in self.circles:
-            c.update()
+        # Remueve los esprites 
+        self.all_sprites.remove(self.all_sprites)
+        # Genera los circulos
+        for p in self.puntos:
+            circle = Circle(p[0], p[1], 30, RED, p[2])
+            self.all_sprites.add(circle)
+        # actualiza los puntos
+        self.all_sprites.update()
 
     def render(self):
         # lineas
@@ -89,5 +89,4 @@ class ArbolGrafico:
             p2 = (self.puntos[i2 - 1][0], self.puntos[i2 - 1][1])
             pg.draw.line(self.screen, WHITE, p1, p2, 8)
         # nodos
-        for c in self.circles:
-            c.render()
+        self.all_sprites.draw(self.screen)
