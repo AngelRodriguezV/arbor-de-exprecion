@@ -26,8 +26,8 @@ class Motor2D:
 
         self.g = Generador()
         self.g.generarDatos(
-            ["a","-","b","*","c","/","d"],
-            ["-","a","/","*","b","c","d"]
+            ["G","D","K","H","L","B","A","E","I","C","F","J","M"],
+            ["A","B","D","G","H","K","L","C","E","I","F","J","M"]
         )
         self.arbol_g = ArbolGrafico(self.screen, WITH, HEIGHT, self.g)
 
