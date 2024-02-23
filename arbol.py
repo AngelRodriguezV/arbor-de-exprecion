@@ -12,7 +12,7 @@ class Arbol:
         self.parentesis = 0
 
     def isOperador(self, caracter):
-        return caracter in ('+', '-', '*', '/')
+        return caracter in ('+', '-', '*', '/','=')
     
     def crearArbol(self, cadena):
         self.cadena = cadena
