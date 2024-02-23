@@ -17,8 +17,8 @@ class Motor2D:
         pg.display.set_caption("Arbol de Exprecion")
         self.window_surface = pg.display.set_mode(SIZE, pg.RESIZABLE)
 
-        self.screen = pg.Surface(SIZE)
-        self.manager = gui.UIManager(SIZE)
+        self.screen = pg.Surface((1600,800))
+        self.manager = gui.UIManager((2000,400))
 
         self.clock = pg.time.Clock()
         self.running = True
@@ -80,7 +80,7 @@ class Motor2D:
         if not (self.arbol_g == None):
             self.arbol_g.render()
 
-        self.window_surface.blit(self.screen, (500,100))
+        self.window_surface.blit(self.screen, (100,100))
         self.manager.draw_ui(self.window_surface)
         pg.display.flip()
 
