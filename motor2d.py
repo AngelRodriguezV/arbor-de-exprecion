@@ -48,8 +48,8 @@ class Motor2D:
 
                     if self.input_expresion.get_text() != '':
                         for c in self.input_expresion.get_text():
-                            if not c in ['qwertyuiopasdfghjklñzxcvbnmQWERTYUIOPASDFGHJKLÑZXCVBNM()=+-/*']:
-                                return
+                            if not c in 'qwertyuiopasdfghjklñzxcvbnmQWERTYUIOPASDFGHJKLÑZXCVBNM()=+-/*':
+                                return  
                         print('La cadena no esta vacia: ' + self.input_expresion.get_text())
                         arbol = Arbol()
                         arbol.crearArbol(self.input_expresion.get_text())
