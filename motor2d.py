@@ -56,6 +56,101 @@ class Motor2D:
         
         pg.display.flip()
 
+    def on_button_click(self):
+        ecuacion = self.input.getText()  # Obtener la ecuación del campo de entrada
+        postfija_ecuacion = postfija(ecuacion)  # Convertir a postfija
+        raiz = arbol(postfija_ecuacion)  # Construir el árbol
+        print("In orden =", inorder(raiz))
+        print("Pre orden =", preorder(raiz))
+        print("Post orden =", postorder(raiz))
+        # Ahora, aquí puedes construir o actualizar el árbol gráfico con la nueva expresión
+
+    # Nuevo método para manejar el evento de clic del botón
+    def on_button_event(self, event):
+        if event == "click":
+            self.on_button_click()
+
+
+    
+def postfija(infija):
+    pilaOperadores = []
+    operadores = "(+-*/)"
+    posfija = ""
+    i = 0
+    while i < len(infija):
+        t = infija[i]
+        if t == '(':
+            pilaOperadores.append(t)
+        else:
+            if t == ')':
+                while pilaOperadores:
+                    o = pilaOperadores.pop()
+                    if o != '(':
+                        posfija += o
+            else:
+                if t in ['+', '-']:
+                    if any(op in ['*', '/', '-', '+'] for op in pilaOperadores):
+                        while pilaOperadores:
+                            posfija += pilaOperadores.pop()
+                    pilaOperadores.append(t)
+                else:
+                    if t in ['*', '/']:
+                        while pilaOperadores and (pilaOperadores[-1] in ['*', '/']):
+                            posfija += pilaOperadores.pop()
+                        pilaOperadores.append(t)
+                    else:
+                        posfija += t
+        i += 1
+    while pilaOperadores:
+        posfija += pilaOperadores.pop()
+    return posfija
+
+def arbol(posfija):
+    pilaNodos = []
+    for c in posfija:
+        if not esOperador(c):
+            nodo = Nodo(c)
+            pilaNodos.append(nodo)
+        else:
+            nodo = Nodo(c)
+            nodoDer = pilaNodos.pop()
+            nodoIzq = pilaNodos.pop()
+            nodo.der = nodoDer
+            nodo.izq = nodoIzq
+            pilaNodos.append(nodo)
+    return pilaNodos.pop()
+
+def esOperador(c):
+    return c in ('+', '-', '*', '/')
+
+# Recorridos
+inO = ""
+postO = ""
+preO = ""
+
+def inorder(nodo):
+    global inO
+    if nodo:
+        inorder(nodo.izq)
+        inO += nodo.valor
+        inorder(nodo.der)
+    return inO
+
+def preorder(nodo):
+    global preO
+    if nodo:
+        preO += nodo.valor
+        preorder(nodo.izq)
+        preorder(nodo.der)
+    return preO
+
+def postorder(nodo):
+    global postO
+    if nodo:
+        postorder(nodo.izq)
+        postorder(nodo.der)
+        postO += nodo.valor
+    return postO
     def run(self):
         while self.running:
             self.event()
