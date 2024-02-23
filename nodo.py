@@ -2,8 +2,9 @@ class Nodo:
     """
         Clase Nodo
     """
-    def __init__(self, data, left=None, right=None) -> None:
+    def __init__(self, data, _id, left=None, right=None) -> None:
         self.data = data
+        self._id = _id
         self.left:Nodo = left
         self.rigth:Nodo = right
 
@@ -16,7 +17,7 @@ def preorden(root:Nodo=None) -> list:
     """
     # Si la raiz no es un nulo
     if root:
-        pre = [root.data]           # Agrega el valor del nodo
+        pre = [{'id':root._id, 'valor':root.data}]          # Agrega el valor del nodo
         pre += preorden(root.left)  # Agrega el resultado del recorrido por el nodo izquierdo
         pre += preorden(root.rigth) # Agrega el resultado del recorrido por el nodo derecho
         return pre
@@ -33,7 +34,7 @@ def inorden(root:Nodo=None) -> list:
     # Si la raiz no es un nulo
     if root:
         inor = inorden(root.left)   # Agrega el resultado del recorrido por el nodo izquierdo
-        inor += [root.data]         # Agrega el valor del nodo
+        inor += [{'id':root._id, 'valor':root.data}]         # Agrega el valor del nodo
         inor += inorden(root.rigth) # Agrega el resultado del recorrido por el nodo derecho
         return inor
     # De se nulo la raiz, retorna una lista vacia
@@ -50,7 +51,7 @@ def postorden(root:Nodo=None) -> list:
     if root:
         post = postorden(root.left)   # Agrega el resultado del recorrido por el nodo izquierdo
         post += postorden(root.rigth) # Agrega el resultado del recorrido por el nodo derecho
-        post += [root.data]           # Agrega el valor del nodo
+        post += [{'id':root._id, 'valor':root.data}]           # Agrega el valor del nodo
         return post
     # De se nulo la raiz, retorna una lista vacia
     return []

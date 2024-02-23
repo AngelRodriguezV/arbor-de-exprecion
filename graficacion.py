@@ -20,7 +20,7 @@ class Generador:
         if star > end or star == end:
             return -1
         index_x = self.__encontrar_indice(self.preorden[self.index_y])
-        self.puntos.append((index_x + 1, n, self.preorden[self.index_y]))
+        self.puntos.append((index_x + 1, n, self.preorden[self.index_y]['valor']))
         self.index_y += 1
         aux = self.index_y
         left = self.__obtener_puntos(star, index_x, n + 1)
@@ -30,9 +30,9 @@ class Generador:
 
         return aux
 
-    def __encontrar_indice(self, value):
+    def __encontrar_indice(self, data):
         for i, v in enumerate(self.inorde):
-            if v == value:
+            if v['id'] == data['id']:
                 return i
         return -1
 

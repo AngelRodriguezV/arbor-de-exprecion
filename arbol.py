@@ -17,6 +17,7 @@ class Arbol:
     def crearArbol(self, cadena):
         self.cadena = cadena
         self.raiz = None
+        _id = -1
         # Recorre la cadena
         # Mientras el caracter diferente de nulo
         for i, caracter in enumerate(cadena):
@@ -29,8 +30,9 @@ class Arbol:
             if caracter == ")":
                 self.parentesis -= 1
                 continue
+            _id += 1
             # Crear un nodo nuevo que contenga ese caracter
-            nodo = Nodo(data=caracter)
+            nodo = Nodo(data=caracter, _id=_id)
 
             if self.isOperador(caracter):
                 self.raiz = self.__insertar_operador(nodo, self.raiz)
