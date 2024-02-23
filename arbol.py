@@ -86,7 +86,7 @@ class Arbol:
             # Si el siguiente carácter es paréntesis derecho
             if self.cadena[self.index + 1] == '(':
                 # Si solo hay un operador en el árbol
-                if not self.isOperador(root.left) and not self.isOperador(root.rigth): 
+                if not self.isOperador(root.left.data) and not self.isOperador(root.rigth.data): 
                     # Nuevo se convierte en raíz
                     new.left = root
                     return new
@@ -95,9 +95,16 @@ class Arbol:
                     # Se inserta en el último nodo derecho
                     aux = root
                     while aux.rigth:
-                        aux = aux.rigth
+                        if aux.rigth.rigth != None:
+                            if aux.rigth.rigth.rigth != None:
+                                aux = aux.rigth
+                        break
+
+                    new.left = aux.rigth
+                    aux.rigth = new
                     # y el nodo se convierte en hijo izquierdo.
-                    aux.left = new
+                    #new.left = rigth
+                    return root
             else:
                 # Nuevo se convierte en raíz
                 new.left = root
